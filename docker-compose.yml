@@ -6,4 +6,4 @@ services:
     restart: always
     container_name: traveloka-takehome-test
     ports:
-    - ${PORT}:${PORT}
+    - ${HOST_PORT}:${CONTAINER_PORT}

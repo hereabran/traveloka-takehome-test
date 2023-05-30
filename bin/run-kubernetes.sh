@@ -14,12 +14,19 @@ fi
 
 source $DIR/bin/build-image.sh;
 
+echo -e "\nAdding NGINX Ingress Controller helm repository...\n";
+helm repo add nginx-stable https://helm.nginx.com/stable;
+
+echo -e "\nRunning helm repo update...\n";
+helm repo update;
+
+helm upgrade --install nginx-ingress nginx-stable/nginx-ingress --set rbac.create=true;
+
 helm upgrade --install \
 traveloka-takehome-test Charts \
+--set image.repository=$IMAGE_NAME \
 --set image.tag=$TAG \
---set containerPort=$PORT \
---set service.port=$PORT
-
-export POD_NAME=$(kubectl get pods --namespace default -l "app.kubernetes.io/name=traveloka-takehome-test,app.kubernetes.io/instance=traveloka-takehome-test" -o jsonpath="{.items[0].metadata.name}");
-export CONTAINER_PORT=$(kubectl get pod --namespace default $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}");
-kubectl --namespace default port-forward $POD_NAME 8080:$CONTAINER_PORT;
+--set containerPort=$CONTAINER_PORT \
+--set service.port=$CONTAINER_PORT \
+--set ingress.enabled=true \
+--set ingress.className=nginx

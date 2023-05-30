@@ -1,7 +1,7 @@
 #!/bin/bash
 
-(command -v git &> /dev/null && command -v docker &> /dev/null && command -v docker-compose &> /dev/null && command -v kubectl &> /dev/null) || {
-  echo "command git OR docker OR docker-compose OR kubectl are not found, please install both binary to run this program!";
+(command -v git &> /dev/null && command -v docker &> /dev/null && command -v docker-compose &> /dev/null && command -v kubectl &> /dev/null && command -v helm &> /dev/null) || {
+  echo "command git OR docker OR docker-compose OR kubectl OR helm are not found, please install the necessary binaries to run this program!";
   exit 1;
 }
 
@@ -14,7 +14,9 @@ if [ ! -f "${DIR}/Dockerfile" ]; then
 fi
 
 export IMAGE_NAME=traveloka-takehome-test;
-export PORT=8080
+export CONTAINER_PORT=8080
+export HOST_PORT=80
+export HOST=localhost
 
 export GIT_BRANCH=$(git branch --show-current)
 if [ $GIT_BRANCH == "solutions/task1" ]; then
@@ -27,6 +29,6 @@ else
 fi
 
 echo -e "Building docker image (${IMAGE_NAME}:${TAG})...\n";
-docker build -t "${IMAGE_NAME}:${TAG}" --build-arg PORT=$PORT $DIR;
+docker build -t "${IMAGE_NAME}:${TAG}" --build-arg PORT=$CONTAINER_PORT $DIR;
 
 echo -e "\nBuild docker image completed.";

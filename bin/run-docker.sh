@@ -17,4 +17,4 @@ source $DIR/bin/build-image.sh;
 echo "Running Docker Compose...";
 docker-compose up -d;
 
-echo -e "\nhttp://localhost:$PORT"
+echo -e "\nvisit: http://${HOST}:${HOST_PORT}"
