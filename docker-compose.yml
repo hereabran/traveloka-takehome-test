@@ -1,9 +1,0 @@
-version: '3.7'
-
-services:
-  app:
-    image: ${IMAGE_NAME}:${TAG}
-    restart: always
-    container_name: traveloka-takehome-test
-    ports:
-    - ${HOST_PORT}:${CONTAINER_PORT}
