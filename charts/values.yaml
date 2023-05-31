@@ -11,6 +11,12 @@ image:
 
 containerPort: 8080
 
+env:
+  DATABASE_USERNAME: traveloka-takehome-test
+  DATABASE_PASSWORD: ""
+  DATABASE_HOST: postgresql
+  DATABASE_NAME: traveloka-takehome-test
+
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""

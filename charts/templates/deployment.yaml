@@ -47,6 +47,27 @@ spec:
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          env:          
+            - name: "DATABASE_USERNAME"
+              valueFrom:
+                secretKeyRef:
+                  key:  DATABASE_USERNAME
+                  name: {{ .Release.Name }}-secrets
+            - name: "DATABASE_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  key:  DATABASE_PASSWORD
+                  name: {{ .Release.Name }}-secrets
+            - name: "DATABASE_HOST"
+              valueFrom:
+                secretKeyRef:
+                  key:  DATABASE_HOST
+                  name: {{ .Release.Name }}-secrets
+            - name: "DATABASE_NAME"
+              valueFrom:
+                secretKeyRef:
+                  key:  DATABASE_NAME
+                  name: {{ .Release.Name }}-secrets
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

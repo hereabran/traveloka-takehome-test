@@ -14,5 +14,8 @@ Cyan='\033[0;36m' # Cyan
 echo -e "\n${Cyan}Uninstalling traveloka-takehome-test Release...${Color_Off}";
 helm uninstall traveloka-takehome-test;
 
+echo -e "\n${Cyan}Uninstalling PostgreSQL Release...${Color_Off}";
+helm uninstall postgresql;
+
 echo -e "\n${Cyan}Uninstalling NGINX Ingress Release...${Color_Off}";
 helm uninstall nginx-ingress;
