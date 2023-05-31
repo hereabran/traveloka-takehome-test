@@ -7,12 +7,12 @@
 This repository contains a simple Hello World HTTP application that can be deployed as a Docker container and run locally with Kubernetes. It fulfills the requirements stated in the task, including packaging the application in a Docker container, deploying it with Kubernetes, exposing the application on port 80, tuning the pods resource requests and limits, load testing with Locust, and providing automation scripts for setup.
 
 ## Table of Contents
-- [Prerequisites](#Prerequisites)
-- [Application Setup](#Application%20Setup)
-- [Running the Application with Kubernetes](#Running%20the%20Application%20with%20Kubernetes)
-- [Load Testing with Locust](#Load%20Testing%20with%20Locust)
-- [Automation Scripts](#Automation%20Scripts)
-- [Rationale, Assumptions, Limitations, and Potential Improvements](#Rationale,%20Assumptions,%20Limitations,%20and%20Potential%20Improvements)
+- [Prerequisites](#prerequisites)
+- [Application Setup](#application-setup)
+- [Running the Application with Kubernetes](#running-the-application-with-kubernetes)
+- [Load Testing with Locust](#load-testing-with-locust)
+- [Automation Scripts](#automation-scripts)
+- [Rationale, Assumptions, Limitations, and Potential Improvements](#rationale-assumptions-limitations-and-potential-improvements)
 
 ## Prerequisites
 
