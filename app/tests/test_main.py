@@ -12,6 +12,6 @@ client = TestClient(app)
 
 
 def test_read_home():
-	response = client.get("/")
-	assert response.status_code == 200
-	assert response.json() == "Hello World"
+    response = client.get("/")
+    assert response.status_code == 200
+    assert response.json() == "Hello World"
