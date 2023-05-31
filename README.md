@@ -110,3 +110,33 @@ You can run these scripts to automate the setup process simply by using the `bas
 
 ## Rationale, Assumptions, Limitations, and Potential Improvements
 
+### Rationale:
+
+- The project aims to showcase a simple Hello World HTTP application that can be deployed using Docker and Kubernetes. It demonstrates the process of containerizing an application, deploying it with Kubernetes, and performing load testing with Locust.
+- Docker allows for packaging the application and its dependencies into a single container, ensuring consistency and portability across different environments.
+- Kubernetes provides an orchestration platform to deploy, manage, and scale the application containers effectively.
+- Load testing with Locust helps evaluate the application's performance and determine its scalability under different user loads.
+
+### Assumptions:
+
+- It is assumed that the user has a basic understanding of Docker, Kubernetes, and Helm. Knowledge of Python, pip, and Locust is also required for load testing.
+- The user already has a Kubernetes cluster set up and has the necessary permissions to deploy applications and resources within the cluster.
+- The user is running the setup on a Unix-like operating system (e.g., Linux, macOS) with bash available.
+
+### Limitations:
+
+- The provided application is a simple Hello World HTTP application and does not represent a real-world production application with complex functionality.
+- The Docker image build assumes a specific Python version (3.9) and may not be compatible with other versions without modification.
+- The deployment and load testing processes described in the repository are simplified and may not cover all aspects of a production-ready setup, such as security configurations, monitoring, and logging.
+- The provided automation scripts are basic and may not handle all possible edge cases or error scenarios.
+
+### Potential Improvements:
+
+- Expand the application to include more complex functionality to better reflect a real-world use case.
+- Add unit tests and integration tests to ensure the application's reliability and functionality.
+- Include configuration options for different database backends or external services that the application may require.
+- Implement logging and monitoring solutions to gain insights into the application's behavior and performance in production.
+- Enhance the automation scripts to handle different deployment environments and provide more flexibility in configuration.
+- Utilize a CI/CD pipeline to automate the build, deployment, and testing processes for increased efficiency and consistency.
+- Implement rolling updates and zero-downtime deployments to ensure continuous availability of the application during updates.
+- Integrate with a centralized error tracking system to receive notifications and insights into application errors and exceptions.
