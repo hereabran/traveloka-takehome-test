@@ -106,7 +106,7 @@ Automation scripts are provided to set up the solution from scratch. The followi
 - `./bin/run.sh`: Deploys the application with Kubernetes (NGINX Ingress Controller).
 - `./bin/uninstall.sh`: Uninstall Helm Release to clean up environment.
 
-You can run these scripts to automate the setup process.
+You can run these scripts to automate the setup process simply by using the `bash` command.
 
 ## Rationale, Assumptions, Limitations, and Potential Improvements
 
