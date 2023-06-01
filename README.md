@@ -18,7 +18,7 @@ This repository contains a simple Hello World HTTP application that can be deplo
 
 #### Before running the application, please ensure you have the following software installed:
 
-- `Python 3.9` & `pip` (for Locust load test, pytest and alembic DB Migration)
+- `Python 3.9` & `pip` (for Locust load test)
 - Docker
 - Kubernetes (with a running cluster)
 - Helm v3
