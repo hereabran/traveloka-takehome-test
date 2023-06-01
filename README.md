@@ -4,7 +4,7 @@
 
 # Traveloka Take Home Test (ABran)
 
-This repository contains a simple Hello World HTTP application that can be deployed as a Docker container and run locally with Kubernetes. It fulfills the requirements stated in the task, including packaging the application in a Docker container, deploying it with Kubernetes, exposing the application on port 80, tuning the pods resource requests and limits, load testing with Locust, and providing automation scripts for setup.
+This repository contains a simple RestAPI CRUD contact application that can be deployed as a Docker container and run locally with Kubernetes. It fulfills the requirements stated in the task, including packaging the application in a Docker container, deploying it with Kubernetes, exposing the application on port 80, tuning the pods resource requests and limits, load testing with Locust, functional test with pytest, how to scaling the app up/down, how to rolling back to previous version and providing automation scripts for setup.
 
 ## Table of Contents
 - [Prerequisites](#prerequisites)
@@ -12,8 +12,8 @@ This repository contains a simple Hello World HTTP application that can be deplo
 - [Running the Application with Kubernetes](#running-the-application-with-kubernetes)
 - [Load Testing with Locust](#load-testing-with-locust)
 - [Functional Testing with Pytest](#functional-testing-with-pytest)
-- [How to Rollback to v1](#how-to-rollback-to-v1)
 - [How to Scaling up/down the Application Horizontally](#how-to-scaling-up-down-the-application-horizontally)
+- [How to Rollback to v1](#how-to-rollback-to-v1)
 - [Automation Scripts](#automation-scripts)
 - [Rationale, Assumptions, Limitations, and Potential Improvements](#rationale-assumptions-limitations-and-potential-improvements)
 
@@ -41,7 +41,7 @@ cd traveloka-takehome-test/solutions/task1
 export DIR=$(pwd)
 export IMAGE_NAME=traveloka-takehome-test
 export CONTAINER_PORT=8080
-export TAG=v1
+export TAG=v2
 ```
 
 3. Build the Docker image:
@@ -51,14 +51,35 @@ docker build -t "${IMAGE_NAME}:${TAG}" --build-arg PORT=$CONTAINER_PORT $DIR
 
 ## Running the Application with Kubernetes
 
-1. Running the application and exposing the application on port 80, which maps to the application's port 8080:
+1. Install PostgreSQL via helm chart repository:
+```bash
+# Export necessary variables
+export DATABASE_USERNAME=traveloka-takehome-test
+export DATABASE_PASSWORD=travelokatakehometest
+export DATABASE_HOST=postgresql
+export DATABASE_NAME=traveloka-takehome-test
+export POSTGRES_PASSWORD=Traveloka1234561
+```
 ```bash
 helm upgrade --install \
-traveloka-takehome-test charts \
+postgresql oci://registry-1.docker.io/bitnamicharts/postgresql \
+--set global.postgresql.auth.postgresPassword=$POSTGRES_PASSWORD \
+--set global.postgresql.auth.username=$DATABASE_USERNAME \
+--set global.postgresql.auth.password=$DATABASE_PASSWORD \
+--set global.postgresql.auth.database=$DATABASE_NAME
+```
+
+2. Running the application and exposing the application on port 80, which maps to the application's port 8080:
+```bash
+--set replicaCount=1 \
 --set image.repository=$IMAGE_NAME \
 --set image.tag=$TAG \
 --set containerPort=$CONTAINER_PORT \
 --set service.port=80 \
+--set env.DATABASE_USERNAME=$DATABASE_USERNAME \
+--set env.DATABASE_PASSWORD=$DATABASE_PASSWORD \
+--set env.DATABASE_HOST=$DATABASE_HOST \
+--set env.DATABASE_NAME=$DATABASE_NAME
 ```
 
 2. Running the application with NGINX Ingress Controller
@@ -70,17 +91,39 @@ helm upgrade --install nginx-ingress nginx-stable/nginx-ingress --set rbac.creat
 ```bash
 helm upgrade --install \
 traveloka-takehome-test charts \
+--set replicaCount=1 \
 --set image.repository=$IMAGE_NAME \
 --set image.tag=$TAG \
 --set containerPort=$CONTAINER_PORT \
 --set service.port=$CONTAINER_PORT \
+--set env.DATABASE_USERNAME=$DATABASE_USERNAME \
+--set env.DATABASE_PASSWORD=$DATABASE_PASSWORD \
+--set env.DATABASE_HOST=$DATABASE_HOST \
+--set env.DATABASE_NAME=$DATABASE_NAME \
 --set ingress.enabled=true \
 --set ingress.className=nginx
 ```
 
-3. Uninstall helm release:
+3. Running DB Migration by `Alembic`:
+```bash
+# Install alembic via pip
+pip install alembic
+
+# Run migration to create the contacts table
+alembic upgrade head
+```
+
+4. Test the app resposes by curl:
+```bash
+curl -X GET http://localhost/contacts
+curl -X GET -I http://localhost/contacts
+```
+
+5. Uninstall helm release:
 ```bash
 helm uninstall traveloka-takehome-test
+helm uninstall postgresql
+kubectl delete pvc -l app.kubernetes.io/name=postgresql
 helm uninstall nginx-ingress
 ```
 
@@ -101,12 +144,95 @@ locust -f app/tests/locustfile.py
 open http://localhost:8089/
 ```
 
+## Functional Testing with Pytest
+Run the `pytest` command to test functional application CRUD function.
+
+1. Test files:
+```
+.
+├── app
+│   └── tests
+│       ├── locustfile.py
+│       ├── test_crud.py
+│       └── test_main.py
+```
+2. Set `PYTHONPATH` variable and run `pytest`:
+```bash
+export PYTHONPATH=$(pwd)
+pytest -v app
+```
+
+## How to Scaling up/down the Application Horizontally
+
+1. Using `helm upgrade` command:
+
+```bash
+# set replica count
+REPLICAS=3
+
+# Upgrade revision
+helm upgrade --install \
+traveloka-takehome-test charts \
+--set replicaCount=$REPLICAS \
+--set image.repository=$IMAGE_NAME \
+--set image.tag=$TAG \
+--set containerPort=$CONTAINER_PORT \
+--set service.port=$CONTAINER_PORT \
+--set env.DATABASE_USERNAME=$DATABASE_USERNAME \
+--set env.DATABASE_PASSWORD=$DATABASE_PASSWORD \
+--set env.DATABASE_HOST=$DATABASE_HOST \
+--set env.DATABASE_NAME=$DATABASE_NAME \
+--set ingress.enabled=true \
+--set ingress.className=nginx
+```
+
+2. Using `./bin/run.sh` script:
+
+```bash
+# set the first argument with number between 1 until 10
+./bin/run.sh 3
+```
+
+## How to Rollback to v1
+```bash
+# set replica count
+REPLICAS=1
+
+# set image tag to rollback
+TAG=v1
+
+# Upgrade revision
+helm upgrade --install \
+traveloka-takehome-test charts \
+--set replicaCount=$REPLICAS \
+--set image.repository=$IMAGE_NAME \
+--set image.tag=$TAG \
+--set containerPort=$CONTAINER_PORT \
+--set service.port=$CONTAINER_PORT \
+--set env.DATABASE_USERNAME=$DATABASE_USERNAME \
+--set env.DATABASE_PASSWORD=$DATABASE_PASSWORD \
+--set env.DATABASE_HOST=$DATABASE_HOST \
+--set env.DATABASE_NAME=$DATABASE_NAME \
+--set ingress.enabled=true \
+--set ingress.className=nginx
+```
+
+2. Using `./bin/run.sh` script:
+
+```bash
+# set the first argument with number between 1 until 10
+./bin/run.sh 1 v1
+```
+
 ## Automation Scripts
 
 Automation scripts are provided to set up the solution from scratch. The following scripts are available:
 
 - `./bin/build-image.sh`: Builds the Docker image.
-- `./bin/run.sh`: Deploys the application with Kubernetes (NGINX Ingress Controller).
+- `./bin/run.sh`: Deploys the application with Kubernetes (NGINX Ingress Controller & PostgreSQL). 
+  > **_NOTE:_**  The above script takes 2 argument for replica count & image tag name.
+
+  > **_IMPORTANT:_** after running the script don't forget to run DB migration before using the app or running `pytest` simply by running `alembic upgrade head` command
 - `./bin/uninstall.sh`: Uninstall Helm Release to clean up environment.
 
 You can run these scripts to automate the setup process simply by using the `bash` command.
@@ -115,7 +241,7 @@ You can run these scripts to automate the setup process simply by using the `bas
 
 ### Rationale:
 
-- The project aims to showcase a simple Hello World HTTP application that can be deployed using Docker and Kubernetes. It demonstrates the process of containerizing an application, deploying it with Kubernetes, and performing load testing with Locust.
+- The project aims to showcase a simple RestAPI CRUD contact application that can be deployed using Docker and Kubernetes. It demonstrates the process of containerizing an application, deploying it with Kubernetes, performing load testing with Locust, and performing functional test with Pytest.
 - Docker allows for packaging the application and its dependencies into a single container, ensuring consistency and portability across different environments.
 - Kubernetes provides an orchestration platform to deploy, manage, and scale the application containers effectively.
 - Load testing with Locust helps evaluate the application's performance and determine its scalability under different user loads.
@@ -128,7 +254,7 @@ You can run these scripts to automate the setup process simply by using the `bas
 
 ### Limitations:
 
-- The provided application is a simple Hello World HTTP application and does not represent a real-world production application with complex functionality.
+- The provided application is a simple RestAPI CRUD contact application and does not represent a real-world production application with complex functionality.
 - The Docker image build assumes a specific Python version (3.9) and may not be compatible with other versions without modification.
 - The deployment and load testing processes described in the repository are simplified and may not cover all aspects of a production-ready setup, such as security configurations, monitoring, and logging.
 - The provided automation scripts are basic and may not handle all possible edge cases or error scenarios.
