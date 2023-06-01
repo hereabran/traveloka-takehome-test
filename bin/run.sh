@@ -14,6 +14,8 @@ elif [[ $REPLICAS -lt 1 || $REPLICAS -gt 10 ]]; then
   exit 1;
 fi
 
+[[ ! -z "$2" ]] && export TAG=$1
+
 if [ ! -f "${DIR}/bin/build-image.sh" ]; then
   echo -e "${Red}\nThere's no ./bin/build-image.sh file at current directory! please move to root project directory!${Color_Off}";
   echo -e "${Cyan}Current directory: $DIR${Color_Off}";
