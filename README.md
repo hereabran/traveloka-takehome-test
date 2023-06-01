@@ -55,7 +55,7 @@ traveloka-takehome-test charts \
 --set image.repository=$IMAGE_NAME \
 --set image.tag=$TAG \
 --set containerPort=$CONTAINER_PORT \
---set service.port=80 \
+--set service.port=80
 ```
 
 2. Running the application with NGINX Ingress Controller
