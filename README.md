@@ -109,6 +109,12 @@ traveloka-takehome-test charts \
 # Install alembic via pip
 pip install alembic
 
+# export necessary variables to connecto to the DB
+export DATABASE_USERNAME=traveloka-takehome-test
+export DATABASE_PASSWORD=travelokatakehometest
+export DATABASE_HOST=localhost
+export DATABASE_NAME=traveloka-takehome-test
+
 # Run migration to create the contacts table
 alembic upgrade head
 ```
