@@ -37,7 +37,7 @@ echo -e "\n${Red}Install/Upgrade NGINX Ingress Release failed.${Color_Off}";
 
 # PostgreSQL variables
 export DATABASE_USERNAME=traveloka-takehome-test
-export DATABASE_PASSWORD=traveloka1231
+export DATABASE_PASSWORD=travelokatakehometest
 export DATABASE_HOST=postgresql
 export DATABASE_NAME=traveloka-takehome-test
 export POSTGRES_PASSWORD=Traveloka1234561

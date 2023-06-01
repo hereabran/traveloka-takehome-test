@@ -16,6 +16,7 @@ helm uninstall traveloka-takehome-test;
 
 echo -e "\n${Cyan}Uninstalling PostgreSQL Release...${Color_Off}";
 helm uninstall postgresql;
+kubectl delete pvc -l app.kubernetes.io/name=postgresql;
 
 echo -e "\n${Cyan}Uninstalling NGINX Ingress Release...${Color_Off}";
 helm uninstall nginx-ingress;
